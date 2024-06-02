@@ -1,3 +1,15 @@
+### Docker commands ###
+build:
+	docker-compose build
+
+up:
+	docker-compose up
+
+down:
+	docker-compose down
+
+
+### Clean up commands ###
 stop-docker:
 	docker stop $$(docker ps -aq)
 
@@ -9,3 +21,5 @@ clear-containers:
 
 clear-volumes:
 	docker volume rm $$(docker volume ls -q)
+
+clean: stop-docker clear-containers clear-images clear-volumes
