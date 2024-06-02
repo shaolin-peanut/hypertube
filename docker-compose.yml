@@ -1,0 +1,39 @@
+version: '3.8'
+services:
+  backend:
+    build: ./backend
+    environment:
+      - DATABASE_HOST=db
+      - DATABASE_USER=${DB_USER}
+      - DATABASE_NAME=${DB_NAME}
+      - DATABASE_PASSWORD=${DB_PASSWORD}
+    ports: #expose outside for debugging
+      - "3000:3000"
+    depends_on:
+      - db
+
+  frontend:
+    build: ./frontend
+    environment:
+      - PORT=${REACT_APP_PORT}
+      - REACT_APP_BACKEND_URL=${BACKEND__URL}
+    ports:
+      - "4000:4000"
+    depends_on:
+      - backend
+
+  db:
+    build: ./db
+    environment:
+      - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${DB_NAME}
+      - MYSQL_USER=${DB_USER}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+    expose:
+        - "3306"
+    volumes:
+      - db-data:/var/lib/mysql
+    restart: unless-stopped
+  
+volumes:
+  db-data:
