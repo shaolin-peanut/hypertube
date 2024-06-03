@@ -14,7 +14,7 @@ services:
     networks:
       - matcha
     volumes:
-      - ./backend:/usr/src/app #mount 
+      - ./backend:/usr/src/app
     restart: unless-stopped
 
   frontend:
