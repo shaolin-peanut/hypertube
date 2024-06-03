@@ -16,7 +16,7 @@ services:
     build: ./frontend
     environment:
       - PORT=${FRONTEND_PORT}
-      - REACT_APP_BACKEND_URL=${BACKEND__URL}
+      - REACT_APP_BACKEND_URL=${BACKEND_URL}
     ports:
       - "4000:4000"
     depends_on:
