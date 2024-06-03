@@ -1,4 +1,4 @@
-version: '3.8'
+
 services:
   backend:
     build: ./backend
@@ -11,6 +11,11 @@ services:
       - "3000:3000"
     depends_on:
       - db
+    networks:
+      - matcha
+    volumes:
+      - ./backend/src:/app/src
+    restart: unless-stopped
 
   frontend:
     build: ./frontend
@@ -21,6 +26,11 @@ services:
       - "4000:4000"
     depends_on:
       - backend
+    networks:
+      - matcha
+    volumes:
+      - ./frontend/src:/app/src
+    restart: unless-stopped
 
   db:
     build: ./db
@@ -31,9 +41,13 @@ services:
       - MYSQL_PASSWORD=${DB_PASSWORD}
     expose:
         - "3306"
+    networks:
+      - matcha
     volumes:
-      - db-data:/var/lib/mysql
+      - ./db/data:/var/lib/mysql
     restart: unless-stopped
-  
-volumes:
-  db-data:
+
+networks:
+  matcha:
+    name: matcha
+    driver: bridge
