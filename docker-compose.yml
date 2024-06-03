@@ -14,7 +14,7 @@ services:
     networks:
       - matcha
     volumes:
-      - ./backend/src:/app/src
+      - ./backend:/usr/src/app #mount 
     restart: unless-stopped
 
   frontend:
@@ -29,7 +29,7 @@ services:
     networks:
       - matcha
     volumes:
-      - ./frontend/src:/app/src
+      - ./frontend:/usr/src/app
     restart: unless-stopped
 
   db:

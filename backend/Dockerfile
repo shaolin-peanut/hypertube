@@ -4,12 +4,13 @@ FROM node:20-alpine
 # Create and define the node app directory
 WORKDIR /usr/src/app
 
-COPY . .
-
 # Install dependencies
+COPY package*.json ./ 
 RUN npm install
+RUN npm install -g nodemon
 
+# Expose the port the app runs on
 EXPOSE 3000
 
 # Command to run the app
-CMD [ "npm", "start" ]
+CMD ["nodemon"]
