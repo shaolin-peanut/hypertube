@@ -9,6 +9,8 @@ COPY package.json ./
 RUN npm install
 RUN npm install -g nodemon
 
+COPY . .
+
 # Expose the port the app runs on
 EXPOSE 3000
 
