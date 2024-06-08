@@ -5,7 +5,7 @@ FROM node:20-alpine
 WORKDIR /usr/src/app
 
 # Install dependencies
-COPY package*.json ./ 
+COPY package.json ./ 
 RUN npm install
 
 # Expose the port that the React application will run on

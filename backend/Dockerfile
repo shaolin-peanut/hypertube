@@ -5,7 +5,8 @@ FROM node:20-alpine
 WORKDIR /usr/src/app
 
 # Install dependencies
-COPY package*.json ./ 
+COPY server.js ./ 
+COPY package.json ./ 
 RUN npm install
 RUN npm install -g nodemon
 
@@ -13,4 +14,4 @@ RUN npm install -g nodemon
 EXPOSE 3000
 
 # Command to run the app
-CMD ["nodemon", "server.js"]
+CMD ["nodemon"]
