@@ -13,4 +13,4 @@ RUN npm install -g nodemon
 EXPOSE 3000
 
 # Command to run the app
-CMD ["nodemon"]
+CMD ["nodemon", "server.js"]
