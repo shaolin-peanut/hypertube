@@ -11,7 +11,6 @@ up:
 down:
 	docker-compose down
 
-
 ### Clean up commands ###
 stop-docker:
 	docker stop $$(docker ps -aq)

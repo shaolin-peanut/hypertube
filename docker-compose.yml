@@ -55,3 +55,6 @@ services:
 networks:
   matcha-networks:
     driver: bridge
+
+volumes:
+  db-data:

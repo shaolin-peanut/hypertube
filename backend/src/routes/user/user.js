@@ -6,24 +6,32 @@ module.exports = async function (fastify, opts) {
     // request and response schema
     schema: {
       summary: 'Create a new user',
-      description: 'Creates a new user with the provided email, username, password',
+      description: 'Creates a new user with the provided email, username, password, first_name, and last_name',
       tags: ['User'],
       body: {
         type: 'object',
-        required: ['email', 'username', 'password'],
+        required: ['email', 'username', 'password', 'first_name', 'last_name'],
         properties: {
           email: {
             type: 'string',
             format: 'email',
             description: 'User email'
           },
-		  username: {
-			type: 'string',
-			description: 'User username'
-		  },
+          username: {
+            type: 'string',
+            description: 'User username'
+          },
           password: {
             type: 'string',
             description: 'User password'
+          },
+          first_name: {
+            type: 'string',
+            description: 'User first name'
+          },
+          last_name: {
+            type: 'string',
+            description: 'User last name'
           }
         }
       },
@@ -34,7 +42,9 @@ module.exports = async function (fastify, opts) {
           properties: {
             id: { type: 'number' },
             email: { type: 'string' },
-            username: { type: 'string' }
+            username: { type: 'string' },
+            first_name: { type: 'string' },
+            last_name: { type: 'string' }
           }
         },
         400: {
@@ -49,7 +59,7 @@ module.exports = async function (fastify, opts) {
     },
     // the function that will handle this request
     handler: async (request, reply) => {
-      const {email, username, password} = request.body
+      const {email, username, password, first_name, last_name} = request.body
       const connection = await fastify.mysql.getConnection() // Get a connection from the pool
 
       // Create a new user
@@ -57,7 +67,7 @@ module.exports = async function (fastify, opts) {
         // Check if the email or username already exists
         console.log('Check if the email or username already exists')
         const [rows] = await connection.query( 
-          'SELECT COUNT(*) AS count FROM users WHERE email = ? OR username = ?',
+          'SELECT COUNT(*) AS count FROM user WHERE email = ? OR username = ?',
           [email, username]
         );
         if (rows[0].count > 0) {
@@ -71,14 +81,16 @@ module.exports = async function (fastify, opts) {
         // Insert the new user into the database
         console.log('Insert the new user into the database')
         const [result] = await connection.query(
-          'INSERT INTO users (email, password, username) VALUES (?, ?, ?)',
-          [email, password, username]
+          'INSERT INTO user (email, password, username, first_name, last_name) VALUES (?, ?, ?, ?, ?)',
+          [email, password, username, first_name, last_name]
         );
 
         reply.code(201).send({
           id: result.insertId,
           email: email,
-          username: username
+          username: username,
+          first_name: first_name,
+          last_name: last_name
         });
       } catch (error) {
         reply.code(500).send({
@@ -89,3 +101,5 @@ module.exports = async function (fastify, opts) {
     }
   })
 }
+
+
