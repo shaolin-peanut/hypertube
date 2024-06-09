@@ -2,23 +2,26 @@
 services:
   backend:
     build: ./backend
+    container_name: matcha-backend
     environment:
-      - DATABASE_HOST=db
-      - DATABASE_USER=${DB_USER}
       - DATABASE_NAME=${DB_NAME}
+      - DATABASE_USER=${DB_USER}
       - DATABASE_PASSWORD=${DB_PASSWORD}
+      - DATABASE_HOST=${DB_HOST}
+      - DATABASE_PORT=${DB_PORT}
     ports: #expose outside for debugging
       - "3000:3000"
     depends_on:
       - db
     networks:
-      - matcha
+      - matcha-networks
     volumes:
       - ./backend/src:/usr/src/app/src
     restart: unless-stopped
 
   frontend:
     build: ./frontend
+    container_name: matcha-frontend
     environment:
       - PORT=${FRONTEND_PORT}
       - REACT_APP_BACKEND_URL=${BACKEND_URL}
@@ -27,27 +30,28 @@ services:
     depends_on:
       - backend
     networks:
-      - matcha
+      - matcha-networks
     volumes:
       - ./frontend/src:/usr/src/app/src
     restart: unless-stopped
 
   db:
     build: ./db
+    container_name: matcha-db
     environment:
       - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
       - MYSQL_DATABASE=${DB_NAME}
       - MYSQL_USER=${DB_USER}
       - MYSQL_PASSWORD=${DB_PASSWORD}
+      - MYSQL_PORT=${DB_PORT}
     expose:
         - "3306"
     networks:
-      - matcha
+      - matcha-networks
     volumes:
       - ./db/data:/var/lib/mysql
     restart: unless-stopped
 
 networks:
-  matcha:
-    name: matcha
+  matcha-networks:
     driver: bridge

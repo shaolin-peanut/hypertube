@@ -5,10 +5,9 @@ FROM node:20-alpine
 WORKDIR /usr/src/app
 
 # Install dependencies
-COPY package.json ./ 
-RUN npm install
-
 COPY . .
+
+RUN npm install
 
 # Expose the port that the React application will run on
 EXPOSE 4000
