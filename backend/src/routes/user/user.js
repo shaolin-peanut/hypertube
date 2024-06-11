@@ -1,4 +1,6 @@
 'use strict'
+const argon2 = require('argon2');
+
 module.exports = async function (fastify, opts) {
   fastify.route({
     url: '/create-user',
@@ -78,11 +80,17 @@ module.exports = async function (fastify, opts) {
           return;
         }
 
+		// Encrypt the password
+		//TODO Add Salt
+		console.log('Encrypt the password')
+		const hashedPassword = await argon2.hash(password)
+		console.log('Hashed password:', hashedPassword)
+	
         // Insert the new user into the database
         console.log('Insert the new user into the database')
         const [result] = await connection.query(
           'INSERT INTO user (email, password, username, first_name, last_name) VALUES (?, ?, ?, ?, ?)',
-          [email, password, username, first_name, last_name]
+          [email, hashedPassword, username, first_name, last_name]
         );
 
         reply.code(201).send({
@@ -101,5 +109,3 @@ module.exports = async function (fastify, opts) {
     }
   })
 }
-
-
