@@ -15,5 +15,5 @@ CREATE TABLE profile (
     sexuality VARCHAR(10) NOT NULL,
 	biography TEXT NOT NULL,
     interest TEXT NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES users(id)
+    FOREIGN KEY (user_id) REFERENCES user(id)
 );

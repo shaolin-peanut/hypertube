@@ -6,13 +6,13 @@ module.exports = async function (fastify, opts) {
     method: ['POST'],
     schema: {
       summary: 'Fill user profile',
-      description: 'Create/Update the profile of the user with the provided user_id, gender, sexuality, biography, and interest',
+      description: 'Create/Update the profile of the user with the provided username, gender, sexuality, biography, and interest',
       tags: ['User'],
       body: {
         type: 'object',
-        required: ['user_id', 'gender', 'biography', 'sexuality', 'interest'],
+        required: ['username', 'gender', 'biography', 'sexuality', 'interest'],
         properties: {
-          user_id: { type: 'number', description: 'User ID' },
+          username: { type: 'string', description: 'Username of the user' },
           gender: { type: 'string', description: 'User gender' },
           sexuality: { type: 'string', description: 'User sexuality' },
           biography: { type: 'string', description: 'User biography' },
@@ -25,7 +25,7 @@ module.exports = async function (fastify, opts) {
           type: 'object',
           properties: {
             id: { type: 'number' },
-            user_id: { type: 'number' },
+            username: { type: 'string' },
             gender: { type: 'string' },
             sexuality: { type: 'string' },
             biography: { type: 'string' },
@@ -43,22 +43,25 @@ module.exports = async function (fastify, opts) {
       }
     },
     handler: async (request, reply) => {
-      const { user_id, gender, sexuality, biography, interest } = request.body;
+      const { username, gender, sexuality, biography, interest } = request.body;
       const connection = await fastify.mysql.getConnection();
 
       try {
-        const [userRows] = await connection.query(
-          'SELECT COUNT(*) AS count FROM user WHERE id = ?',
-          [user_id]
+        // First find the user ID from username
+        const [user] = await connection.query(
+          'SELECT id FROM user WHERE username = ?',
+          [username]
         );
-        if (userRows[0].count === 0) {
+        if (user.length === 0) {
           reply.code(400).send({
             code: 'USER_NOT_FOUND',
-            message: 'User ID does not exist'
+            message: 'Username does not exist'
           });
           return;
         }
+        const user_id = user[0].id;
 
+        // Check if profile exists
         const [profileRows] = await connection.query(
           'SELECT COUNT(*) AS count FROM profile WHERE user_id = ?',
           [user_id]
@@ -67,14 +70,14 @@ module.exports = async function (fastify, opts) {
         if (profileRows[0].count > 0) {
           // Profile exists, update it
           console.log('Update the profile data into the profile table');
-          const [updateResult] = await connection.query(
+          await connection.query(
             'UPDATE profile SET gender = ?, sexuality = ?, biography = ?, interest = ? WHERE user_id = ?',
             [gender, sexuality, biography, interest, user_id]
           );
 
           reply.code(201).send({
             id: user_id,
-            user_id: user_id,
+            username: username,
             gender: gender,
             sexuality: sexuality,
             biography: biography,
@@ -83,6 +86,7 @@ module.exports = async function (fastify, opts) {
         } else {
           // Profile does not exist, insert new one
           console.log('Insert the profile data into the profile table');
+		  console.log('user_id: ', user_id);
           const [insertResult] = await connection.query(
             'INSERT INTO profile (user_id, gender, sexuality, biography, interest) VALUES (?, ?, ?, ?, ?)',
             [user_id, gender, sexuality, biography, interest]
@@ -90,7 +94,7 @@ module.exports = async function (fastify, opts) {
 
           reply.code(201).send({
             id: insertResult.insertId,
-            user_id: user_id,
+            username: username,
             gender: gender,
             sexuality: sexuality,
             biography: biography,
@@ -109,3 +113,4 @@ module.exports = async function (fastify, opts) {
     }
   });
 };
+
