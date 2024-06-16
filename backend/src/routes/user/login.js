@@ -54,14 +54,18 @@ module.exports = async function (fastify, opts) {
 			});
 			return;
 		}
-		if (!(await argon2.verify(user[0].password, password))) {
+		//verify password wtith salt in env
+		const salt = process.env.DATABSE_SALT
+		const saltedPassword = password + salt
+		if (!(await argon2.verify(user[0].password, saltedPassword))) {
 			reply.code(400).send({
 				code: 'INVALID_PASSWORD',
 				message: 'Invalid password'
 			});
 			return;
 		}
-		//TODO generate token
+		//TODO generate jwt token
 	}
   });
 }
+

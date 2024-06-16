@@ -9,6 +9,7 @@ services:
       - DATABASE_PASSWORD=${DB_PASSWORD}
       - DATABASE_HOST=${DB_HOST}
       - DATABASE_PORT=${DB_PORT}
+      - DATABSE_SALT=${SALT}
     ports: #expose outside for debugging
       - "3000:3000"
     depends_on:

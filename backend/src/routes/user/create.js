@@ -82,9 +82,11 @@ module.exports = async function (fastify, opts) {
         }
 
 		// Encrypt the password
-		//TODO Add Salt
+		// Add salt to the password
+		const salt = process.env.DATABSE_SALT
+		const saltedPassword = password + salt
 		console.log('Encrypt the password')
-		const hashedPassword = await argon2.hash(password)
+		const hashedPassword = await argon2.hash(saltedPassword)
 		console.log('Hashed password:', hashedPassword)
 	
         // Insert the new user into the database
@@ -93,7 +95,6 @@ module.exports = async function (fastify, opts) {
           'INSERT INTO user (email, password, username, first_name, last_name) VALUES (?, ?, ?, ?, ?)',
           [email, hashedPassword, username, first_name, last_name]
         );
-
         reply.code(201).send({
           id: result.insertId,
           email: email,
