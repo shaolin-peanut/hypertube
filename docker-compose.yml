@@ -13,7 +13,8 @@ services:
     ports: #expose outside for debugging
       - "3000:3000"
     depends_on:
-      - db
+      db:
+        condition: service_healthy #wait for db to be ready
     networks:
       - matcha-networks
     volumes:
@@ -51,6 +52,10 @@ services:
       - matcha-networks
     volumes:
       - ./db/data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      start_period: 10s
     restart: unless-stopped
 
 networks:
