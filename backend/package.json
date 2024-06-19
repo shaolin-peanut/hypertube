@@ -25,10 +25,13 @@
     "@fastify/swagger": "8.10.0",
     "@fastify/swagger-ui": "^3.1.0",
     "argon2": "^0.40.3",
+    "dotenv": "^16.4.5",
     "fastify": "^4.26.1",
     "fastify-auth": "^1.2.0",
     "fastify-cli": "^6.1.1",
     "fastify-jwt": "^4.2.0",
-    "fastify-plugin": "^4.0.0"
+    "fastify-plugin": "^4.0.0",
+    "mailersend": "^2.2.0",
+    "uuidv4": "^6.2.13"
   }
 }

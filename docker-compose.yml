@@ -10,6 +10,7 @@ services:
       - DATABASE_HOST=${DB_HOST}
       - DATABASE_PORT=${DB_PORT}
       - DATABSE_SALT=${SALT}
+      - MAILERSEND_API_KEY=${MAILERSEND_API_KEY}
     ports: #expose outside for debugging
       - "3000:3000"
     depends_on:

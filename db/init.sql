@@ -9,6 +9,13 @@ CREATE TABLE user (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE user_verification (
+	user_id INT PRIMARY KEY,
+	verification_id VARCHAR(100) NOT NULL,
+	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	FOREIGN KEY (user_id) REFERENCES user(id)
+);
+
 CREATE TABLE profile (
     user_id INT PRIMARY KEY,
     gender VARCHAR(10) NOT NULL,

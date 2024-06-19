@@ -1,6 +1,8 @@
 'use strict'
 
 const argon2 = require('argon2');
+const { Recipient, Sender, EmailParams, MailerSend } = require("mailersend");
+const { uuid } = require('uuidv4');
 
 module.exports = async function (fastify, opts) {
   fastify.route({
@@ -87,7 +89,6 @@ module.exports = async function (fastify, opts) {
 		const saltedPassword = password + salt
 		console.log('Encrypt the password')
 		const hashedPassword = await argon2.hash(saltedPassword)
-		console.log('Hashed password:', hashedPassword)
 	
         // Insert the new user into the database
         console.log('Insert the new user into the database')
@@ -95,6 +96,37 @@ module.exports = async function (fastify, opts) {
           'INSERT INTO user (email, password, username, first_name, last_name) VALUES (?, ?, ?, ?, ?)',
           [email, hashedPassword, username, first_name, last_name]
         );
+
+		// Create unique id to verify its account
+		console.log('Create unique id to verify its account')
+		const verificationId = uuid() // Generate a random UUID
+
+		console.log('Insert the verification id into the database')
+		await connection.query(
+			'INSERT INTO user_verification (user_id, verification_id) VALUES (?, ?)',
+			[result.insertId, verificationId]
+		);
+
+		const mailerSend = new MailerSend({
+			apiKey: process.env.MAILERSEND_API_KEY
+		});
+
+		const sentFrom = new Sender("verify@trial-3vz9dle78p64kj50.mlsender.net", "Matcha");
+		const recipients = [new Recipient(email, first_name + " " + last_name)];
+
+		const emailParams = new EmailParams()
+			.setFrom(sentFrom)
+			.setTo(recipients)
+			.setReplyTo(sentFrom)
+			.setSubject("Verify your account")
+			.setHtml("Click <a href='http://localhost:3000/verify-account/" + verificationId + "'>here</a> to verify your account")
+			.setText("This is the text content");
+		
+		console.log('Sending email to:', email)
+		await mailerSend.email.send(emailParams);
+		console.log('Email sent to :', email)
+
+
         reply.code(201).send({
           id: result.insertId,
           email: email,
@@ -103,9 +135,12 @@ module.exports = async function (fastify, opts) {
           last_name: last_name
         });
       } catch (error) {
+		console.log('An error occurred while creating the user')
+		console.log('Error:', error)
         reply.code(500).send({
           code: 'INTERNAL_SERVER_ERROR',
-          message: 'An error occurred while creating the user'
+          message: 'An error occurred while creating the user',
+		  error: error
         });
       }
     }
