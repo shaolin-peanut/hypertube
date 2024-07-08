@@ -5,8 +5,9 @@ build:
 build-no-cache:
 	docker-compose build --no-cache
 
+# added --build so that everytime you run up, it also builds any changes made
 up:
-	docker-compose up
+	docker-compose up --build
 
 down:
 	docker-compose down

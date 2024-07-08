@@ -90,12 +90,19 @@ module.exports = async function (fastify, opts) {
 		console.log('Encrypt the password')
 		const hashedPassword = await argon2.hash(saltedPassword)
 	
-        // Insert the new user into the database
-        console.log('Insert the new user into the database')
-        const [result] = await connection.query(
-          'INSERT INTO user (email, password, username, first_name, last_name) VALUES (?, ?, ?, ?, ?)',
-          [email, hashedPassword, username, first_name, last_name]
-        );
+    // // insert the new user and his verification id in the same table
+    // console.log('Insert the new user and his verification id in the same table')
+    // const [result] = await connection.query(
+    //   'INSERT INTO user (email, password, username, first_name, last_name, verification_id) VALUES (?, ?, ?, ?, ?, ?)',
+    //   [email, hashedPassword, username, first_name, last_name, verificationId]
+    // );
+
+    // Insert the new user into the database
+    console.log('Insert the new user into the database')
+    const [result] = await connection.query(
+      'INSERT INTO user (email, password, username, first_name, last_name) VALUES (?, ?, ?, ?, ?)',
+      [email, hashedPassword, username, first_name, last_name]
+    );
 
 		// Create unique id to verify its account
 		console.log('Create unique id to verify its account')
@@ -118,14 +125,13 @@ module.exports = async function (fastify, opts) {
 			.setFrom(sentFrom)
 			.setTo(recipients)
 			.setReplyTo(sentFrom)
-			.setSubject("Verify your account")
+			.setSubject("Verify your email address")
 			.setHtml("Click <a href='http://localhost:3000/verify-account/" + verificationId + "'>here</a> to verify your account")
-			.setText("This is the text content");
+			.setText("You can verify your email address by clicking the link above");
 		
 		console.log('Sending email to:', email)
 		await mailerSend.email.send(emailParams);
 		console.log('Email sent to :', email)
-
 
         reply.code(201).send({
           id: result.insertId,

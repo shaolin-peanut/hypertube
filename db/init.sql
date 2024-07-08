@@ -4,17 +4,18 @@ CREATE TABLE user (
     username VARCHAR(50) NOT NULL, -- 50 is the max length of a username
 	first_name VARCHAR(50) NOT NULL,
 	last_name VARCHAR(50) NOT NULL,
+    verification_id VARCHAR(100) NOT NULL,
     password VARCHAR(100) NOT NULL,
     active BOOLEAN DEFAULT false,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE user_verification (
-	user_id INT PRIMARY KEY,
-	verification_id VARCHAR(100) NOT NULL,
-	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-	FOREIGN KEY (user_id) REFERENCES user(id)
-);
+-- CREATE TABLE user_verification (
+-- 	user_id INT PRIMARY KEY,
+-- 	verification_id VARCHAR(100) NOT NULL,
+-- 	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+-- 	FOREIGN KEY (user_id) REFERENCES user(id)
+-- );
 
 CREATE TABLE profile (
     user_id INT PRIMARY KEY,
