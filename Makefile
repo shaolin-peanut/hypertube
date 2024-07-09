@@ -6,7 +6,10 @@ build-no-cache:
 	docker-compose build --no-cache
 
 up:
-	docker-compose up
+	docker-compose up --build
+
+updetached:
+	docker-compose up --build -d
 
 down:
 	docker-compose down

@@ -3,8 +3,11 @@ import AuthForm from '../components/AuthForm';
 
 const Login = () => {
   return (
-    <div>
-      <h1>Welcome to Matcha</h1>
+    <div className="
+    flex items-center
+    justify-center min-h-screen min-w-screen
+    backdrop-blur-md
+    ">
       <AuthForm />
     </div>
   );

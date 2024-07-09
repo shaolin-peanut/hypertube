@@ -20,11 +20,13 @@ const HomePage = () => {
         </div>
       </header>
 
+      {/* Contenu random*/}
+
       <main className="container mx-auto mt-10 p-5">
         <section className="text-center mb-20">
           <h2 className="text-5xl font-bold text-white mb-4">Find Your Perfect Blend</h2>
           <p className="text-xl text-white mb-8">Matcha brings together like-minded individuals, creating connections that last.</p>
-          <Button size="lg" className="text-lg px-8 py-4">Get Started</Button>
+          <Button size="lg" className="text-lg px-8 py-4"><Link to="/login">Get Started</Link></Button>
         </section>
 
         <section className="grid md:grid-cols-3 gap-8">
