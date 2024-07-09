@@ -2,13 +2,16 @@
 
 const argon2 = require('argon2');
 
+// TODO: this was a route that was used to check if a user exists,
+// but now it should return useful info, not done yet
+
 module.exports = async function (fastify, opts) {
   fastify.route({
-    url: '/exists',
+    url: '/getinfo',
     method: ['GET'],
     schema: {
-      summary: 'Check if user exists',
-      description: 'Check if the user with the provided email exists',
+      summary: 'Get user info',
+      description: 'Return all useful user info',
       tags: ['User'],
       querystring: {
         type: 'object',

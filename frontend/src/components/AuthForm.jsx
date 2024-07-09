@@ -189,6 +189,9 @@ const AuthForm = () => {
       <CardHeader>
         <CardTitle>{isLogin ? 'Log In' : 'Sign Up'}</CardTitle>
         <CardDescription>{isLogin ? 'Welcome back' : 'Create your account'}</CardDescription>
+        <Button variant="link" onClick={() => setIsLogin(!isLogin)}>
+          {isLogin ? "Don't have an account? Click to Sign Up" : "Already have an account? Click to Log In"}
+        </Button>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(onSubmitAuth)}>
@@ -226,11 +229,6 @@ const AuthForm = () => {
           </Button>
         </form>
       </CardContent>
-      <CardFooter>
-        <Button variant="link" onClick={() => setIsLogin(!isLogin)}>
-          {isLogin ? "Don't have an account? Sign Up" : "Already have an account? Log In"}
-        </Button>
-      </CardFooter>
       {errors[Object.keys(errors)[0]] && (
         <CardFooter>
           <p className="text-red-500">{errors[Object.keys(errors)[0]].message}</p>
