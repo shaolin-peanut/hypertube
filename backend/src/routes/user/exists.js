@@ -1,5 +1,7 @@
 'use strict';
 
+const argon2 = require('argon2');
+
 module.exports = async function (fastify, opts) {
   fastify.route({
     url: '/exists',
@@ -36,19 +38,30 @@ module.exports = async function (fastify, opts) {
     handler: async (request, reply) => {
       const { email } = request.query;
       const connection = await fastify.mysql.getConnection();
-
-      const [user] = await connection.query(
-        'SELECT COUNT(*) AS count FROM user WHERE email = ?',
-        [email]
-      );
-      if (user.count > 0) {
-        reply.code(200).send({
-          exists: true
+    
+      try {
+        const [rows] = await connection.query(
+          'SELECT COUNT(*) AS count FROM user WHERE email = ?',
+          [email]
+        );
+    
+        if (rows[0].count > 0) {
+          reply.code(200).send({
+            exists: true
+          });
+        } else {
+          reply.code(200).send({
+            exists: false
+          });
+        }
+      } catch (error) {
+        reply.code(500).send({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'An error occurred while verifying the user',
+          error: error
         });
-      } else {
-        reply.code(200).send({
-          exists: false
-        });
+      } finally {
+        connection.release();
       }
     }
   });

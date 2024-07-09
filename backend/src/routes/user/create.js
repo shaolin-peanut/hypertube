@@ -49,7 +49,8 @@ module.exports = async function (fastify, opts) {
             email: { type: 'string' },
             username: { type: 'string' },
             first_name: { type: 'string' },
-            last_name: { type: 'string' }
+            last_name: { type: 'string' },
+            success: { type: 'boolean' }
           }
         },
         400: {
@@ -57,6 +58,7 @@ module.exports = async function (fastify, opts) {
           type: 'object',
           properties: {
             code: { type: 'string' },
+            success: { type: 'boolean' },
             message: { type: 'string' }
           }
         }
@@ -70,26 +72,26 @@ module.exports = async function (fastify, opts) {
       // Create a new user
       try {
         // Check if the email or username already exists
-        console.log('Check if the email or username already exists')
+        console.log('Check if the email or username already exists');
         const [rows] = await connection.query( 
           'SELECT COUNT(*) AS count FROM user WHERE email = ? OR username = ?',
           [email, username]
-        );
+        )
         if (rows[0].count > 0) {
           reply.code(400).send({
             code: 'USER_EXISTS',
             message: 'Email or Username already exists'
           });
+          reply.redirect('localhost:4000', 400);
           return;
         }
 
-		// Encrypt the password
-		// Add salt to the password
-		const salt = process.env.DATABSE_SALT
-		const saltedPassword = password + salt
-		console.log('Encrypt the password')
-		const hashedPassword = await argon2.hash(saltedPassword)
-	
+        // Add salt to the password
+        const salt = process.env.DATABASE_SALT
+        const saltedPassword = password + salt
+        console.log('Encrypt the password')
+        const hashedPassword = await argon2.hash(saltedPassword)
+      
         // Insert the new user into the database
         console.log('Insert the new user into the database')
         const [result] = await connection.query(
@@ -97,51 +99,56 @@ module.exports = async function (fastify, opts) {
           [email, hashedPassword, username, first_name, last_name]
         );
 
-		// Create unique id to verify its account
-		console.log('Create unique id to verify its account')
-		const verificationId = uuid() // Generate a random UUID
+        // Create unique id to verify its account
+        console.log('Create unique id to verify its account')
+        const verificationId = uuid() // Generate a random UUID
 
-		console.log('Insert the verification id into the database')
-		await connection.query(
-			'INSERT INTO user_verification (user_id, verification_id) VALUES (?, ?)',
-			[result.insertId, verificationId]
-		);
+        console.log('Insert the verification id into the database')
+        await connection.query(
+          'INSERT INTO user_verification (user_id, verification_id) VALUES (?, ?)',
+          [result.insertId, verificationId]
+        );
 
-		const mailerSend = new MailerSend({
-			apiKey: process.env.MAILERSEND_API_KEY
-		});
+        const mailerSend = new MailerSend({
+          apiKey: process.env.MAILERSEND_API_KEY
+        });
 
-		const sentFrom = new Sender("verify@trial-3vz9dle78p64kj50.mlsender.net", "Matcha");
-		const recipients = [new Recipient(email, first_name + " " + last_name)];
+        const sentFrom = new Sender("MS_TIFpHj@trial-o65qngkj96wlwr12.mlsender.net", "Matcha");
+        const recipients = [new Recipient(email, first_name + " " + last_name)];
 
-		const emailParams = new EmailParams()
-			.setFrom(sentFrom)
-			.setTo(recipients)
-			.setReplyTo(sentFrom)
-			.setSubject("Verify your account")
-			.setHtml("Click <a href='http://localhost:3000/verify-account/" + verificationId + "'>here</a> to verify your account")
-			.setText("This is the text content");
-		
-		console.log('Sending email to:', email)
-		await mailerSend.email.send(emailParams);
-		console.log('Email sent to :', email)
-
-
+        const emailParams = new EmailParams()
+          .setFrom(sentFrom)
+          .setTo(recipients)
+          .setReplyTo(sentFrom)
+          .setSubject("Verify your account")
+          .setHtml("Click <a href='http://localhost:3000/verify-account/" + verificationId + "'>here</a> to verify your account")
+          .setText("This is the text content");
+        
+        console.log('Sending email to:', email)
+        await mailerSend.email.send(emailParams);
+        console.log('Email sent to :', email)
         reply.code(201).send({
           id: result.insertId,
           email: email,
           username: username,
           first_name: first_name,
-          last_name: last_name
+          last_name: last_name,
+          success: true
         });
+        reply.redirect('localhost:4000/member/dashboard', 201);
       } catch (error) {
-		console.log('An error occurred while creating the user')
-		console.log('Error:', error)
+        console.log('An error occurred while creating the user')
+        console.log('Error:', error)
         reply.code(500).send({
           code: 'INTERNAL_SERVER_ERROR',
           message: 'An error occurred while creating the user',
-		  error: error
+          success: false,
+          error: error
         });
+        reply.redirect('localhost:4000', 500);
+      } finally {
+        connection.release();
+        // redirect user to localhost:4000/member/dashboard
       }
     }
   })

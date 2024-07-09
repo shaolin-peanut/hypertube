@@ -1,3 +1,7 @@
+DROP TABLE IF EXISTS user;
+DROP TABLE IF EXISTS user_verification;
+DROP TABLE IF EXISTS profile;
+
 CREATE TABLE user (
     id INT PRIMARY KEY AUTO_INCREMENT, -- auto incrementing primary key
     email VARCHAR(100) NOT NULL,
@@ -6,7 +10,8 @@ CREATE TABLE user (
 	last_name VARCHAR(50) NOT NULL,
     password VARCHAR(100) NOT NULL,
     active BOOLEAN DEFAULT false,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    verified BOOLEAN DEFAULT false,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 );
 
 CREATE TABLE user_verification (
