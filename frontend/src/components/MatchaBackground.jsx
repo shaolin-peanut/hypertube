@@ -1,0 +1,18 @@
+import React from 'react';
+
+const Layout = ({ children }) => {
+  return (
+    <div className="min-h-screen min-w-screen bg-gradient-to-br from-background-start to-background-end">
+      <div className="container mx-auto p-5">
+        {children}
+      </div>
+      <footer className="mt-20 bg-white bg-opacity-10 backdrop-blur-md py-10">
+        <div className="container mx-auto text-center text-text-light">
+          <p>&copy; 2024 Matcha Dating. All rights reserved.</p>
+        </div>
+      </footer>
+    </div>
+  );
+};
+
+export default Layout;

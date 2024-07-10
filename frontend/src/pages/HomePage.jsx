@@ -1,12 +1,16 @@
+// libs
 import React from 'react';
+// external components
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import { Link } from 'react-router-dom';
+// homemade components
 import Header from '../components/Header';
+import MatchaBackground from '../components/MatchaBackground';
 
 const HomePage = () => {
   return (
-    <div className="min-h-screen min-w-screen bg-gradient-to-br from-background-start to-background-end">
+    <MatchaBackground>
       <Header />
       <main className="container mx-auto mt-10 p-5">
         <section className="text-center mb-20">
@@ -48,7 +52,7 @@ const HomePage = () => {
           <p>&copy; 2024 Matcha Dating. All rights reserved.</p>
         </div>
       </footer>
-    </div>
+    </MatchaBackground>
   );
 };
 
