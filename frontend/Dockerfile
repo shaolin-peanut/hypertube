@@ -1,16 +1,21 @@
-# Use Node 14 Alpine as the base image
+# Use an official Node.js runtime as a parent image
 FROM node:20-alpine
 
-# Set the working directory inside the container
+# Set the working directory in the container
 WORKDIR /usr/src/app
 
-# Install dependencies
-COPY . .
+# Copy package.json and package-lock.json to the working directory
+COPY package*.json ./
 
+# Install app dependencies
 RUN npm install
 
-# Expose the port that the React application will run on
+# Copy the rest of your application code to the working directory
+COPY . .
+
+# Expose a port to communicate with the React app
 EXPOSE 4000
 
-# Start the React application
-CMD ["npm", "start"]
+# Start your React app
+CMD ["npm", "run", "dev"]
+

@@ -25,7 +25,8 @@ module.exports = async function (fastify, opts) {
 		  properties: {
 			id: { type: 'number' },
 			username: { type: 'string' },
-			token: { type: 'string' }
+			token: { type: 'string' },
+			success: { type: 'boolean' }
 		  }
 		},
         400: {
@@ -42,30 +43,54 @@ module.exports = async function (fastify, opts) {
 		const { username, password } = request.body;
 		const connection = await fastify.mysql.getConnection();
 
-		//check username and password
-		const [user] = await connection.query(
-			'SELECT id, username, password FROM user WHERE username = ?',
+		try {
+			const [user] = await connection.query(
+				'SELECT id, username, password FROM user WHERE username = ?',
 			[username]
-		);
-		if (user.length === 0) {
-			reply.code(400).send({
-				code: 'USER_NOT_FOUND',
-				message: 'Username does not exist'
-			});
-			return;
-		}
-		//verify password wtith salt in env
-		const salt = process.env.DATABSE_SALT
-		const saltedPassword = password + salt
-		if (!(await argon2.verify(user[0].password, saltedPassword))) {
-			reply.code(400).send({
+			);
+			if (user.length === 0) {
+				console.log('user not found');
+				reply.code(400).send({
+					code: 'USER_NOT_FOUND',
+					message: 'Username does not exist'
+				});
+				return;
+			}
+			//verify password wtith salt in env
+			const salt = process.env.DATABASE_SALT
+			const saltedPassword = password + salt
+			if (!(await argon2.verify(user[0].password, saltedPassword))) {
+				console.log('invalid password');
+				reply.code(400).send({
 				code: 'INVALID_PASSWORD',
 				message: 'Invalid password'
 			});
 			return;
+			}
+			//TODO generate jwt token and send it back
+			console.log('success');
+			reply.code(200).send({
+				id: user[0].id,
+				code: 'USER_SUCCESS',
+				username: user[0].username,
+				token: 'blablabla',
+				success: true
+			});
+			connection.release();
+		} catch (error) {
+			console.log('error')
+			console.log(error)
+			reply.code(500).send({
+				code: 'INTERNAL_SERVER_ERROR',
+				message: 'An error occurred while verifying the user',
+				error: error
+			});
+			
+			} finally {
+			connection.release();
 		}
-		//TODO generate jwt token
-	}
+		//TODO generate jwt token and send it back
+		}
   });
 }
 

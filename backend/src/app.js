@@ -10,7 +10,9 @@ module.exports = async function (fastify, opts) {
   fastify.register(require('@fastify/swagger'), {})
   fastify.register(require('@fastify/swagger-ui'), {
     routePrefix: '/docs',
-  })
+    })
+  fastify.register(require('@fastify/formbody'));
+  //fastify.register(require('@fastify/json'));
 
   // Do not touch the following lines
 
@@ -28,6 +30,17 @@ module.exports = async function (fastify, opts) {
     dir: path.join(__dirname, 'routes'),
     options: Object.assign({}, opts)
   })
+
+
+  // cors plugin
+  fastify.register(require('@fastify/cors'), {
+    origin: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
+  });
+
+  fastify.listen(process.env.PORT || 3000, 'localhost')
 }
 
 module.exports.options = options
