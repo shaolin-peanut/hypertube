@@ -2,23 +2,12 @@ import React from 'react';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import { Link } from 'react-router-dom';
+import Header from '../components/Header';
 
 const HomePage = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background-start to-background-end">
-      <header className="p-5 bg-white bg-opacity-10 backdrop-blur-md">
-        <div className="container mx-auto flex justify-between items-center">
-          <h1 className="text-4xl font-bold text-text-light">Matcha</h1>
-          <nav>
-            <Button variant="outline" className="mr-2 text-text-light">
-              <Link to="/login">Sign In</Link>
-            </Button>
-            <Button className="bg-primary text-text-light">
-              <Link to="/login">Sign Up</Link>
-            </Button>
-          </nav>
-        </div>
-      </header>
+    <div className="min-h-screen min-w-screen bg-gradient-to-br from-background-start to-background-end">
+      <Header />
       <main className="container mx-auto mt-10 p-5">
         <section className="text-center mb-20">
           <h2 className="text-5xl font-bold text-text-light mb-4">Find Your Perfect Blend</h2>
