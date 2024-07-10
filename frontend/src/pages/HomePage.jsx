@@ -5,13 +5,11 @@ import { Button } from '../components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import { Link } from 'react-router-dom';
 // homemade components
-import Header from '../components/Header';
-import MatchaBackground from '../components/MatchaBackground';
+import MatchaLayout from '../components/MatchaLayout';
 
 const HomePage = () => {
   return (
-    <MatchaBackground>
-      <Header />
+    <MatchaLayout>
       <main className="container mx-auto mt-10 p-5">
         <section className="text-center mb-20">
           <h2 className="text-5xl font-bold text-text-light mb-4">Find Your Perfect Blend</h2>
@@ -47,12 +45,7 @@ const HomePage = () => {
           </Card>
         </section>
       </main>
-      <footer className="mt-20 bg-white bg-opacity-10 backdrop-blur-md py-10">
-        <div className="container mx-auto text-center text-text-light">
-          <p>&copy; 2024 Matcha Dating. All rights reserved.</p>
-        </div>
-      </footer>
-    </MatchaBackground>
+    </MatchaLayout>
   );
 };
 

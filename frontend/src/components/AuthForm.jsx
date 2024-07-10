@@ -12,35 +12,20 @@ const AuthForm = () => {
 
   const onSubmitAuth = async (data) => {
     try {
-      if (isLogin) {
-        console.log('Logging in');
-        const response = await fetch(`http://localhost:3000/user/login`, {
+      let apiUrl;
+      if (isLogin)
+        apiUrl = `http://localhost:3000/user/login`;
+      else
+        apiUrl = `http://localhost:3000/user/create-user`;
+
+      const response = await fetch(apiUrl, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            username: data.username,
-            password: data.password
-          }),
-        });
-        const responseData = await response.json();
-        if (responseData.success) {
-          navigate('/member/dashboard');
-        }
-      } else {
-        console.log('Creating a new user');
-        const response = await fetch(`http://localhost:3000/user/create-user`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: {'Content-Type': 'application/json',},
           body: JSON.stringify(data),
         });
-        const responseData = await response.json();
-        if (responseData.success) {
-          navigate('/member/dashboard');
-        }
+      const responseData = await response.json();
+      if (responseData.success) {
+        navigate('/member/dashboard');
       }
     } catch (error) {
       console.error('Authentication error:', error);
@@ -52,6 +37,9 @@ const AuthForm = () => {
       <CardHeader>
         <CardTitle className="text-card-text">{isLogin ? 'Log In' : 'Sign Up'}</CardTitle>
         <CardDescription className="text-card-text">{isLogin ? 'Welcome back' : 'Create your account'}</CardDescription>
+        <Button variant="link" onClick={() => setIsLogin(!isLogin)} className="text-primary">
+          {isLogin ? "Don't have an account? Sign Up" : "Already have an account? Log In"}
+        </Button>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(onSubmitAuth)}>
@@ -94,11 +82,6 @@ const AuthForm = () => {
           </Button>
         </form>
       </CardContent>
-      <CardFooter>
-        <Button variant="link" onClick={() => setIsLogin(!isLogin)} className="text-primary">
-          {isLogin ? "Don't have an account? Sign Up" : "Already have an account? Log In"}
-        </Button>
-      </CardFooter>
       {errors[Object.keys(errors)[0]] && (
         <CardFooter>
           <p className="text-red-500">{errors[Object.keys(errors)[0]].message}</p>
