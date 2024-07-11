@@ -22,10 +22,11 @@ const AuthForm = () => {
           method: 'POST',
           headers: {'Content-Type': 'application/json',},
           body: JSON.stringify(data),
+          credentials: 'include',
         });
       const responseData = await response.json();
       if (responseData.success) {
-        navigate('/member/dashboard');
+        navigate('/fill-profile');
       }
     } catch (error) {
       console.error('Authentication error:', error);
