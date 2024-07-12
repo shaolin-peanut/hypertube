@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import CustomLayout from "../components/MatchaLayout";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const ProfileForm = () => {
   const { register, handleSubmit, formState: { errors }, setValue } = useForm();
@@ -16,6 +17,21 @@ const ProfileForm = () => {
   const [newInterest, setNewInterest] = useState('');
   const [gender, setGender] = useState('');
   const [sexuality, setSexuality] = useState('');
+  const [username, setUsername] = useState('');
+
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const usernameParam = params.get('username');
+    if (usernameParam) {
+      setUsername(usernameParam);
+    } else {
+      navigate('/member/dashboard');
+    }
+  }, [location, navigate]);
+
 
   const onSubmit = async (data) => {
     const profileData = {
@@ -23,10 +39,11 @@ const ProfileForm = () => {
       interests: interests.join(','),
       gender,
       sexuality,
+      username,
     };
 
     try {
-      const response = await fetch('/api/fill-profile', {
+      const response = await fetch('http://localhost:3000/user/profile', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -37,6 +54,7 @@ const ProfileForm = () => {
       
       if (response.ok) {
         console.log('Profile updated successfully');
+        navigate('/member/dashboard');
       } else {
         setSubmitError('Failed to update profile. Please try again.');
       }

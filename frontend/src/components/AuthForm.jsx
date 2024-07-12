@@ -12,11 +12,9 @@ const AuthForm = () => {
 
   const onSubmitAuth = async (data) => {
     try {
-      let apiUrl;
-      if (isLogin)
-        apiUrl = `http://localhost:3000/user/login`;
-      else
-        apiUrl = `http://localhost:3000/user/create-user`;
+      let apiUrl = isLogin
+        ? `http://localhost:3000/user/login`
+        : `http://localhost:3000/user/create-user`;
 
       const response = await fetch(apiUrl, {
           method: 'POST',
@@ -27,7 +25,10 @@ const AuthForm = () => {
         });
       const responseData = await response.json();
       if (responseData.success) {
-        navigate('/fill-profile');
+        if (isLogin)
+          navigate('/member/dashboard');
+        else
+          navigate(`/fill-profile?username=${encodeURIComponent(data.username)}`);
       }
     } catch (error) {
       console.error('Authentication error:', error);

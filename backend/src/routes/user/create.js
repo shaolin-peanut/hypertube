@@ -83,16 +83,18 @@ module.exports = async function (fastify, opts) {
         //   [email, hashedPassword, username, first_name, last_name, false, true, false]
         // );
         const [result] = await connection.query(
-          'INSERT INTO user (email, password, username, first_name, last_name, active, verified) VALUES (?, ?, ?, ?, ?, ?, ?)',
-          [email, hashedPassword, username, first_name, last_name, true, false]
+          'INSERT INTO user (email, username, password, first_name, last_name, active, verified) VALUES (?, ?, ?, ?, ?, ?, ?)',
+          [email, username, hashedPassword, first_name, last_name, true, false]
         )
+        console.log("User inserted in db");
     
         // Create verification record
         const verificationId = uuidv4();
         await connection.query(
-          'INSERT INTO user_verification (user_id, verification_id) VALUES (?, ?)',
+          'INSERT INTO user_verification (user_id, token) VALUES (?, ?)',
           [result.insertId, verificationId]
         );
+        console.log("Verification record inserted in db");
 
         // Send verification email
         const mailerSend = new MailerSend({
@@ -111,6 +113,7 @@ module.exports = async function (fastify, opts) {
           .setText("This is the text content");
         
         await mailerSend.email.send(emailParams);
+        console.log("Email sent");
 
         return reply.code(201).send({
           success: true,
