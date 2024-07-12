@@ -17,11 +17,6 @@ module.exports = async function (fastify, opts) {
     options: Object.assign({}, opts)
   })
 
-  fastify.register(AutoLoad, {
-    dir: path.join(__dirname, 'routes'),
-    options: Object.assign({}, opts)
-  })
-
   // cors plugin
   fastify.register(require('@fastify/cors'), {
     origin: true,
@@ -30,7 +25,11 @@ module.exports = async function (fastify, opts) {
     credentials: true,
   });
 
-  fastify.listen(process.env.PORT || 3000, 'localhost')
+  fastify.register(AutoLoad, {
+    dir: path.join(__dirname, 'routes'),
+    options: Object.assign({}, opts)
+  })
+
 }
 
 module.exports.options = options
